@@ -16,8 +16,7 @@ void ecall_set_key(const char* key, uint8_t* val, uint32_t val_len) {
 void ecall_get_key(const char* key, uint8_t* val, uint32_t max_val_len, uint32_t* val_len) {
     const std::string keyVal = std::string(key);
     const std::string insideVal = user_key_map[keyVal];
-    memcpy(val, insideVal.c_str(), sizeof(insideVal.c_str()));
-    *val_len = sizeof(insideVal.c_str());
+    memcpy(val, insideVal.c_str(), insideVal.length());
 }
 
 int ecall_init(const uint8_t* attestation_parameters, uint32_t ap_size, const uint8_t* cc_parameters, uint32_t ccp_size, const uint8_t* host_parameters, uint32_t hp_size, uint8_t* credentials, uint32_t credentials_max_size, uint32_t* credentials_size) {
