@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# SGX
+*enclave_t.h
+*enclave_t.c
+*enclave_u.h
+*enclave_u.c
