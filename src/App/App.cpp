@@ -151,8 +151,8 @@ int SGX_CDECL main(int argc, char *argv[])
 
     const char* key = "hello";
     const char* val = "world";
-    const char* newVal = malloc(sizeof(val));
-    ecall_set_key(global_eid, key, val, sizeof(val));
+    const char* newVal = (const char*)malloc(sizeof(val));
+    ecall_set_key(global_eid, key, val, sizeof(val);
     ecall_get_key(global_eid, key, newVal, 0, 0);
     printf("%s", newVal);
 
