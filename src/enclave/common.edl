@@ -10,5 +10,7 @@ enclave {
                 [out, size=credentials_max_size] uint8_t *credentials, uint32_t credentials_max_size,
                 [out] uint32_t *credentials_size
         );
+	
+	public int ecall_get_pk([out, size=64] uint8_t *pubkey);
     };
 };
