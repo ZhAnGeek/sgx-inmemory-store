@@ -48,7 +48,7 @@ int ecall_get_pk(uint8_t *pubkey){
     return SGX_SUCCESS;
 }
 
-int ecall_init(const uint8_t* attestation_parameters, uint32_t ap_size, const uint8_t* cc_parameters, uint32_t ccp_size, const uint8_t* host_parameters, uint32_t hp_size, uint8_t* credentials, uint32_t credentials_max_size, uint32_t* credentials_size) {
+int ecall_init() {
     sgx_ecc_state_handle_t ecc_handle = NULL;
     sgx_status_t sgx_ret = sgx_ecc256_open_context(&ecc_handle);
     if (sgx_ret != SGX_SUCCESS) {
