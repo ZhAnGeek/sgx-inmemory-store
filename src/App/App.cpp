@@ -150,12 +150,13 @@ int SGX_CDECL main(int argc, char *argv[])
     }
 
     const char* key = "hello";
+    const char* pk = "";
     const char* val = "world";
     uint32_t keyl = strlen(key);
     uint32_t vall = strlen(val);
     unsigned char* newVal = (unsigned char*)malloc(vall);
-    ecall_set_key(global_eid, key, (unsigned char*)val, vall);
-    ecall_get_key(global_eid, key, newVal, keyl, &vall);
+    ecall_set_key(global_eid, pk, key, (unsigned char*)val, vall);
+    ecall_get_key(global_eid, pk, key, newVal, keyl, &vall);
     printf("%s", newVal);
 
     /* Destroy the enclave */
