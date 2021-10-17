@@ -38,7 +38,7 @@ int ecall_get_key(const char*pk, const char* key, uint8_t* val, uint32_t max_val
 }
 
 // returns enclave pk in Big Endian format
-int ecall_get_pk(uint8_t *pubkey){
+int ecall_get_pk(uint8_t *pubkey) {
     // transform enclave_pk to Big Endian before hashing
     uint8_t enclave_pk_be[sizeof(sgx_ec256_public_t)];
     memcpy(enclave_pk_be, &enclave_pk, sizeof(sgx_ec256_public_t));

@@ -155,10 +155,15 @@ int SGX_CDECL main(int argc, char *argv[])
     uint32_t keyl = strlen(key);
     uint32_t vall = strlen(val);
     unsigned char* newVal = (unsigned char*)malloc(vall);
+    unsigned char* pubKey = (unsigned char*)malloc(sizeof(sgx_ec256_public_t));
     int retVal = 0;
-    ecall_set_key(global_eid, &retVal, pk, key, (unsigned char*)val, vall);
-    ecall_get_key(global_eid, &retVal, pk, key, newVal, keyl, &vall);
-    printf("%s", newVal);
+    // ecall_set_key(global_eid, &retVal, pk, key, (unsigned char*)val, vall);
+    // ecall_get_key(global_eid, &retVal, pk, key, newVal, keyl, &vall);
+    ecall_init(global_eid, &retVal);
+
+    ecall_get_pk(global_eid, &retVal, pubKey);
+    // printf("%s", newVal);
+    printf("%s", pubKey);
 
     /* Destroy the enclave */
     sgx_destroy_enclave(global_eid);
