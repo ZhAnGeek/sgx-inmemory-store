@@ -155,8 +155,9 @@ int SGX_CDECL main(int argc, char *argv[])
     uint32_t keyl = strlen(key);
     uint32_t vall = strlen(val);
     unsigned char* newVal = (unsigned char*)malloc(vall);
-    ecall_set_key(global_eid, pk, key, (unsigned char*)val, vall);
-    ecall_get_key(global_eid, pk, key, newVal, keyl, &vall);
+    int retVal = 0;
+    ecall_set_key(global_eid, &retVal, pk, key, (unsigned char*)val, vall);
+    ecall_get_key(global_eid, &retVal, pk, key, newVal, keyl, &vall);
     printf("%s", newVal);
 
     /* Destroy the enclave */

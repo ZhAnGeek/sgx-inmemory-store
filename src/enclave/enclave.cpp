@@ -22,17 +22,19 @@ void bytes_swap(void *bytes, size_t len)
     }
 }
 
-void ecall_set_key(const char* pk, const char* key, uint8_t* val, uint32_t val_len) {
+int ecall_set_key(const char* pk, const char* key, uint8_t* val, uint32_t val_len) {
     char* insideVal = new char[val_len];
     memcpy(insideVal, val, val_len);
     const std::string keyVal = std::string(key);
     user_key_map[keyVal] = insideVal;
+    return 0;
 }
 
-void ecall_get_key(const char*pk, const char* key, uint8_t* val, uint32_t max_val_len, uint32_t* val_len) {
+int ecall_get_key(const char*pk, const char* key, uint8_t* val, uint32_t max_val_len, uint32_t* val_len) {
     const std::string keyVal = std::string(key);
     const std::string insideVal = user_key_map[keyVal];
     memcpy(val, insideVal.c_str(), insideVal.length());
+    return 0;
 }
 
 // returns enclave pk in Big Endian format

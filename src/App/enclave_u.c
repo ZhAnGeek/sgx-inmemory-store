@@ -2,6 +2,7 @@
 #include <errno.h>
 
 typedef struct ms_ecall_set_key_t {
+	int ms_retval;
 	const char* ms_pk;
 	size_t ms_pk_len;
 	const char* ms_key;
@@ -11,6 +12,7 @@ typedef struct ms_ecall_set_key_t {
 } ms_ecall_set_key_t;
 
 typedef struct ms_ecall_get_key_t {
+	int ms_retval;
 	const char* ms_pk;
 	size_t ms_pk_len;
 	const char* ms_key;
@@ -36,7 +38,7 @@ static const struct {
 	0,
 	{ NULL },
 };
-sgx_status_t ecall_set_key(sgx_enclave_id_t eid, const char* pk, const char* key, uint8_t* val, uint32_t val_len)
+sgx_status_t ecall_set_key(sgx_enclave_id_t eid, int* retval, const char* pk, const char* key, uint8_t* val, uint32_t val_len)
 {
 	sgx_status_t status;
 	ms_ecall_set_key_t ms;
@@ -47,10 +49,11 @@ sgx_status_t ecall_set_key(sgx_enclave_id_t eid, const char* pk, const char* key
 	ms.ms_val = val;
 	ms.ms_val_len = val_len;
 	status = sgx_ecall(eid, 0, &ocall_table_enclave, &ms);
+	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }
 
-sgx_status_t ecall_get_key(sgx_enclave_id_t eid, const char* pk, const char* key, uint8_t* val, uint32_t max_val_len, uint32_t* val_len)
+sgx_status_t ecall_get_key(sgx_enclave_id_t eid, int* retval, const char* pk, const char* key, uint8_t* val, uint32_t max_val_len, uint32_t* val_len)
 {
 	sgx_status_t status;
 	ms_ecall_get_key_t ms;
@@ -62,6 +65,7 @@ sgx_status_t ecall_get_key(sgx_enclave_id_t eid, const char* pk, const char* key
 	ms.ms_max_val_len = max_val_len;
 	ms.ms_val_len = val_len;
 	status = sgx_ecall(eid, 1, &ocall_table_enclave, &ms);
+	if (status == SGX_SUCCESS && retval) *retval = ms.ms_retval;
 	return status;
 }
 
