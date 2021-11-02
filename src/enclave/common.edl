@@ -4,6 +4,6 @@ enclave {
 
     trusted {
         public int ecall_init(void);
-	public int ecall_get_pk([out, size=64] uint8_t *pubkey);
+	    public int ecall_get_pk([out, size=64] uint8_t *pubkey);
     };
 };

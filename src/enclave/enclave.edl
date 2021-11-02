@@ -5,16 +5,22 @@ enclave {
 
     trusted {
         public int ecall_set_key(
-            [in, string] const char *pk,
-            [in, string] const char *key,
-            [in, size=val_len] uint8_t *val, uint32_t val_len
+            [in, string] const char *client_key,
+            [in, string] const char *nonce,
+            [in, size=val_len] uint8_t *val, uint32_t val_len,
+            [out] uint8_t *signature,
+            [out] uint8_t *token,
+            [out] uint32_t *tok_len,
+            [out] uint32_t *sig_len
         );
 
         public int ecall_get_key(
-            [in, string] const char *pk,
-            [in, string] const char *key,
+            [in, string] const char *client_key,
+            [in, string] const char *token,
             [out, size=max_val_len] uint8_t *val, uint32_t max_val_len,
-            [out] uint32_t *val_len
+            [out, size=max_sig_len] uint8_t *signature, uint32_t max_sig_len,
+            [out] uint32_t *val_len,
+            [out] uint32_t *sig_len
         );
     };
 };
