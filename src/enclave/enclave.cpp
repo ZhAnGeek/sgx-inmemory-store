@@ -100,7 +100,7 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     sgx_read_rand(ptk_token, SGX_AESGCM_IV_SIZE);
 
     // encrypt
-    sgx_rijndael128GCM_encrypt(&key, ptk.c_str(), ptk.length(),
+    sgx_rijndael128GCM_encrypt(&key, (uint8_t *)ptk.c_str(), ptk.length(),
         ptk_token + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE, ptk_token, SGX_AESGCM_IV_SIZE, NULL, 0,
         (sgx_aes_gcm_128bit_tag_t *)(ptk_token + SGX_AESGCM_IV_SIZE));
     memcpy(token, ptk_token, ptk_cipher_len); // ret token
@@ -162,7 +162,7 @@ int ecall_get_key(const char*pk, const char* token, uint8_t* val, uint32_t max_v
     sgx_read_rand(ptv_token, SGX_AESGCM_IV_SIZE);
 
     // encrypt
-    sgx_rijndael128GCM_encrypt(&key, insideVal.c_str(), insideVal.length(),
+    sgx_rijndael128GCM_encrypt(&key, (uint8_t *)insideVal.c_str(), insideVal.length(),
         ptv_token + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE, ptv_token, SGX_AESGCM_IV_SIZE, NULL, 0,
         (sgx_aes_gcm_128bit_tag_t *)(ptv_token + SGX_AESGCM_IV_SIZE));
     memcpy(val, ptv_token, ptv_cipher_len); // ret token
