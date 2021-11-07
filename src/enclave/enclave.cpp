@@ -132,9 +132,6 @@ int ecall_get_key(const char*pk, const char* token, uint8_t* val, uint32_t max_v
     sgx_aes_gcm_128bit_key_t key;
     memcpy(key, h, sizeof(sgx_aes_gcm_128bit_key_t));
 
-    char* insideVal = new char[val_len];
-    memcpy(insideVal, val, val_len);
-    
     std::string _cipher = base64_decode(token);
     uint8_t *cipher = (uint8_t *)_cipher.c_str();
     int cipher_len = _cipher.size();
