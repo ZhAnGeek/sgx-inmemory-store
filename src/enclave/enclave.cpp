@@ -70,7 +70,7 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
         return sgx_ret;
     }
 
-    _cipher = base64_decode(token);
+    _cipher = base64_decode(nonce);
     cipher = (uint8_t *)_cipher.c_str();
     cipher_len = _cipher.size();
 
