@@ -25,7 +25,7 @@ void bytes_swap(void *bytes, size_t len)
 int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_len, uint8_t* token, uint8_t* signature, uint32_t* tok_len, uint32_t* sig_len) {
     sgx_ec256_public_t client_pk = {0};
 
-    uint8_t *pk_bytes = (uint8_t *)pk.c_str();
+    uint8_t *pk_bytes = (uint8_t *)pk;
     bytes_swap(pk_bytes, 32);
     bytes_swap(pk_bytes + 32, 32);
     memcpy(&client_pk, pk_bytes, sizeof(sgx_ec256_public_t));
@@ -36,7 +36,6 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     sgx_ecc256_open_context(&ecc_handle);
     int sgx_ret = sgx_ecc256_compute_shared_dhkey(&enclave_sk, &client_pk, &shared_dhkey, ecc_handle);
     if (sgx_ret != SGX_SUCCESS) {
-        LOG_ERROR("Compute shared dhkey: %d\n", sgx_ret);
         return sgx_ret;
     }
     sgx_ecc256_close_context(ecc_handle);
@@ -68,7 +67,6 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
         NULL, 0,                                                    /* aad */
         (sgx_aes_gcm_128bit_tag_t *)(cipher + SGX_AESGCM_IV_SIZE)); /* tag */
     if (sgx_ret != SGX_SUCCESS) {
-        LOG_ERROR("Decrypt error: %x\n", sgx_ret);
         return sgx_ret;
     }
 
@@ -88,7 +86,6 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
         NULL, 0,                                                    /* aad */
         (sgx_aes_gcm_128bit_tag_t *)(cipher + SGX_AESGCM_IV_SIZE)); /* tag */
     if (sgx_ret != SGX_SUCCESS) {
-        LOG_ERROR("Decrypt error: %x\n", sgx_ret);
         return sgx_ret;
     }
     
