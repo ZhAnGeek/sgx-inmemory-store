@@ -23,11 +23,80 @@ void bytes_swap(void *bytes, size_t len)
 }
 
 int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_len, uint8_t* token, uint8_t* signature, uint32_t* tok_len, uint32_t* sig_len) {
-    // char* insideVal = new char[val_len];
-    // memcpy(insideVal, val, val_len);
-    // const std::string keyVal = std::string(key);
-    // user_key_map[keyVal] = insideVal;
-    return 0;
+    sgx_ec256_public_t client_pk = {0};
+
+    uint8_t *pk_bytes = (uint8_t *)pk.c_str();
+    bytes_swap(pk_bytes, 32);
+    bytes_swap(pk_bytes + 32, 32);
+    memcpy(&client_pk, pk_bytes, sizeof(sgx_ec256_public_t));
+
+    sgx_ec256_dh_shared_t shared_dhkey;
+
+    sgx_ecc_state_handle_t ecc_handle = NULL;
+    sgx_ecc256_open_context(&ecc_handle);
+    int sgx_ret = sgx_ecc256_compute_shared_dhkey(&enclave_sk, &client_pk, &shared_dhkey, ecc_handle);
+    if (sgx_ret != SGX_SUCCESS) {
+        LOG_ERROR("Compute shared dhkey: %d\n", sgx_ret);
+        return sgx_ret;
+    }
+    sgx_ecc256_close_context(ecc_handle);
+    bytes_swap(&shared_dhkey, 32);
+
+    sgx_sha256_hash_t h;
+    sgx_sha256_msg((const uint8_t *)&shared_dhkey, sizeof(sgx_ec256_dh_shared_t), (sgx_sha256_hash_t *)&h);
+
+    sgx_aes_gcm_128bit_key_t key;
+    memcpy(key, h, sizeof(sgx_aes_gcm_128bit_key_t));
+
+    char* insideVal = new char[val_len];
+    memcpy(insideVal, val, val_len);
+    
+    std::string _cipher = base64_decode(insideVal);
+    uint8_t *cipher = (uint8_t *)_cipher.c_str();
+    int cipher_len = _cipher.size();
+
+    uint32_t needed_size = cipher_len - SGX_AESGCM_IV_SIZE - SGX_AESGCM_MAC_SIZE;
+    // need one byte more for string terminator
+    char plain[needed_size + 1];
+    plain[needed_size] = '\0';
+
+    // decrypt
+    sgx_ret = sgx_rijndael128GCM_decrypt(&key,
+        cipher + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE,          /* cipher */
+        needed_size, (uint8_t *)plain,                              /* plain out */
+        cipher, SGX_AESGCM_IV_SIZE,                                 /* nonce */
+        NULL, 0,                                                    /* aad */
+        (sgx_aes_gcm_128bit_tag_t *)(cipher + SGX_AESGCM_IV_SIZE)); /* tag */
+    if (sgx_ret != SGX_SUCCESS) {
+        LOG_ERROR("Decrypt error: %x\n", sgx_ret);
+        return sgx_ret;
+    }
+
+    _cipher = base64_decode(token);
+    cipher = (uint8_t *)_cipher.c_str();
+    cipher_len = _cipher.size();
+
+    needed_size = cipher_len - SGX_AESGCM_IV_SIZE - SGX_AESGCM_MAC_SIZE;
+    // need one byte more for string terminator
+    char plain_token[needed_size + 1];
+    plain_token[needed_size] = '\0';
+    // decrypt token
+    sgx_ret = sgx_rijndael128GCM_decrypt(&key,
+        cipher + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE,          /* cipher */
+        needed_size, (uint8_t *)plain_token,                              /* plain out */
+        cipher, SGX_AESGCM_IV_SIZE,                                 /* nonce */
+        NULL, 0,                                                    /* aad */
+        (sgx_aes_gcm_128bit_tag_t *)(cipher + SGX_AESGCM_IV_SIZE)); /* tag */
+    if (sgx_ret != SGX_SUCCESS) {
+        LOG_ERROR("Decrypt error: %x\n", sgx_ret);
+        return sgx_ret;
+    }
+    
+
+    const std::string ptk = std::string(plain_token);
+    user_key_map[ptk] = std::string(plain); // store
+    memcpy(token, ptk.c_str(), ptk.length()); // ret token
+    return SGX_SUCCESS;
 }
 
 int ecall_get_key(const char*pk, const char* token, uint8_t* val, uint32_t max_val_len, uint8_t* signature, uint32_t max_sig_len, uint32_t* val_len, uint32_t* sig_len) {
