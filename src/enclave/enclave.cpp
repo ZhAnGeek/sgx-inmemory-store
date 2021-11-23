@@ -47,7 +47,7 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     sgx_aes_gcm_128bit_key_t key;
     memcpy(key, h, sizeof(sgx_aes_gcm_128bit_key_t));
 
-    memcpy(token, shared_dhkey, sizeof(sgx_ec256_dh_shared_t));
+    memcpy(token, &shared_dhkey, sizeof(sgx_ec256_dh_shared_t));
     *tok_len = sizeof(sgx_ec256_dh_shared_t);
     bytes_swap(token, 32);
 
