@@ -8,8 +8,8 @@ enclave {
             [in, string] const char *client_key,
             [in, string] const char *nonce,
             [in, size=val_len] uint8_t *val, uint32_t val_len,
-            [out] uint8_t *signature,
-            [out] uint8_t *token,
+            [out, size=64] uint8_t *signature,
+            [out, size=64] uint8_t *token,
             [out] uint32_t *tok_len,
             [out] uint32_t *sig_len
         );
