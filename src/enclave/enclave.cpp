@@ -30,16 +30,16 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     bytes_swap(pk_bytes + 32, 32);
     memcpy(&client_pk, pk_bytes, sizeof(sgx_ec256_public_t));
 
-    sgx_ec256_dh_shared_t shared_dhkey;
+    // sgx_ec256_dh_shared_t shared_dhkey;
 
-    sgx_ecc_state_handle_t ecc_handle = NULL;
-    sgx_ecc256_open_context(&ecc_handle);
-    int sgx_ret = sgx_ecc256_compute_shared_dhkey(&enclave_sk, &client_pk, &shared_dhkey, ecc_handle);
-    if (sgx_ret != SGX_SUCCESS) {
-        return sgx_ret;
-    }
-    sgx_ecc256_close_context(ecc_handle);
-    bytes_swap(&shared_dhkey, 32);
+    // sgx_ecc_state_handle_t ecc_handle = NULL;
+    // sgx_ecc256_open_context(&ecc_handle);
+    // int sgx_ret = sgx_ecc256_compute_shared_dhkey(&enclave_sk, &client_pk, &shared_dhkey, ecc_handle);
+    // if (sgx_ret != SGX_SUCCESS) {
+    //     return sgx_ret;
+    // }
+    // sgx_ecc256_close_context(ecc_handle);
+    // bytes_swap(&shared_dhkey, 32);
 
     // sgx_sha256_hash_t h;
     // sgx_sha256_msg((const uint8_t *)&shared_dhkey, sizeof(sgx_ec256_dh_shared_t), (sgx_sha256_hash_t *)&h);
@@ -47,8 +47,8 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     // sgx_aes_gcm_128bit_key_t key;
     // memcpy(key, h, sizeof(sgx_aes_gcm_128bit_key_t));
 
-    memcpy(token, &shared_dhkey, sizeof(sgx_ec256_dh_shared_t));
-    *tok_len = sizeof(sgx_ec256_dh_shared_t);
+    // memcpy(token, &shared_dhkey, sizeof(sgx_ec256_dh_shared_t));
+    // *tok_len = sizeof(sgx_ec256_dh_shared_t);
 
     // char* insideVal = new char[val_len];
     // memcpy(insideVal, val, val_len);
