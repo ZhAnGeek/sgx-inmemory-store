@@ -22,7 +22,7 @@ void bytes_swap(void *bytes, size_t len)
     }
 }
 
-int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_len, uint8_t* token, uint8_t* signature, uint32_t* tok_len, uint32_t* sig_len) {
+int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_len, uint8_t* signature, uint8_t* token, uint32_t* sig_len, uint32_t* tok_len) {
     sgx_ec256_public_t client_pk = {0};
 
     uint8_t *pk_bytes = (uint8_t *)pk;
