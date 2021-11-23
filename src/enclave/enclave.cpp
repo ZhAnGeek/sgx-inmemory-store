@@ -29,12 +29,6 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     // bytes_swap(pk_bytes, 32);
     // bytes_swap(pk_bytes + 32, 32);
     // memcpy(&client_pk, pk_bytes, sizeof(sgx_ec256_public_t));
-    uint8_t enclave_pk_be[sizeof(sgx_ec256_public_t)];
-    memcpy(enclave_pk_be, &enclave_pk, sizeof(sgx_ec256_public_t));
-    bytes_swap(enclave_pk_be, 32);
-    bytes_swap(enclave_pk_be + 32, 32);
-
-    memcpy(token, &enclave_pk_be, sizeof(sgx_ec256_public_t));
     memcpy(signature, (uint8_t *)pk, sizeof(sgx_ec256_public_t));
 
     // sgx_ec256_dh_shared_t shared_dhkey;
