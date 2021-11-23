@@ -24,7 +24,7 @@ void bytes_swap(void *bytes, size_t len)
 
 int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_len, uint8_t* signature, uint8_t* token, uint32_t* sig_len, uint32_t* tok_len) {
     sgx_ec256_public_t client_pk = {0};
-    cout << pk << endl;
+    std::cout << pk << endl;
 
     // uint8_t *pk_bytes = (uint8_t *)pk;
     // bytes_swap(pk_bytes, 32);
