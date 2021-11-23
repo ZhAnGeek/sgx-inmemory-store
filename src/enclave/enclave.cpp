@@ -34,7 +34,7 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     bytes_swap(enclave_pk_be, 32);
     bytes_swap(enclave_pk_be + 32, 32);
 
-    memcpy(token, &enclave_pk_be, sizeof(sgx_ec256_public_t));
+    memcpy(token, &enclave_pk_be, 1);
 
     // sgx_ec256_dh_shared_t shared_dhkey;
 
