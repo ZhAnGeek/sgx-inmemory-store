@@ -24,17 +24,12 @@ void bytes_swap(void *bytes, size_t len)
 
 int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_len, uint8_t* signature, uint8_t* token, uint32_t* sig_len, uint32_t* tok_len) {
     // sgx_ec256_public_t client_pk = {0};
+
     // uint8_t *pk_bytes = (uint8_t *)pk;
     // bytes_swap(pk_bytes, 32);
     // bytes_swap(pk_bytes + 32, 32);
     // memcpy(&client_pk, pk_bytes, sizeof(sgx_ec256_public_t));
-    // transform enclave_pk to Big Endian before hashing
-    uint8_t enclave_pk_be[sizeof(sgx_ec256_public_t)];
-    memcpy(enclave_pk_be, &enclave_pk, sizeof(sgx_ec256_public_t));
-    bytes_swap(enclave_pk_be, 32);
-    bytes_swap(enclave_pk_be + 32, 32);
-
-    memcpy(token, &enclave_pk_be, 1);
+    memcpy(&token, (uint8_t *)pk, sizeof(sgx_ec256_public_t));
 
     // sgx_ec256_dh_shared_t shared_dhkey;
 
