@@ -49,6 +49,7 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
 
     memcpy(token, key, sizeof(sgx_aes_gcm_128bit_key_t));
     *tok_len = sizeof(sgx_aes_gcm_128bit_key_t);
+    bytes_swap(token, 16);
 
     // char* insideVal = new char[val_len];
     // memcpy(insideVal, val, val_len);
