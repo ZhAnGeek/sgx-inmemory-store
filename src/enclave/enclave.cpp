@@ -85,6 +85,8 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     sgx_rijndael128GCM_encrypt(&key, (uint8_t *)ptk.c_str(), ptk.length(),
         token + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE, token, SGX_AESGCM_IV_SIZE, NULL, 0,
         (sgx_aes_gcm_128bit_tag_t *)(token + SGX_AESGCM_IV_SIZE));
+
+    *tok_len = ptk_cipher_len;
     return SGX_SUCCESS;
 }
 
