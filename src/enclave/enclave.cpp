@@ -51,9 +51,6 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     // need one byte more for string terminator
     char plain[needed_size + 1];
     plain[needed_size] = '\0';
-    
-    memcpy(token, &key, sizeof(sgx_aes_gcm_128bit_key_t));
-    memcpy(signature, cipher, cipher_len);
 
     sgx_ret = sgx_rijndael128GCM_decrypt(&key,
         cipher + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE,          /* cipher */
@@ -70,24 +67,24 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     // char plain_token[needed_size + 1];
     // plain_token[needed_size] = '\0';
 
-    // unsigned char plain_token_rand[32];
-    // sgx_read_rand((unsigned char*)&plain_token_rand, 32);
-    // char plain_token[32];
-    // memcpy(plain_token, plain_token_rand, 32);
+    unsigned char plain_token_rand[32];
+    sgx_read_rand((unsigned char*)&plain_token_rand, 32);
+    char plain_token[32];
+    memcpy(plain_token, plain_token_rand, 32);
 
-    // const std::string ptk = std::string(plain_token, plain_token + 32);
-    // user_key_map[ptk] = std::string(plain, plain + needed_size); // store
+    const std::string ptk = std::string(plain_token, plain_token + 32);
+    user_key_map[ptk] = std::string(plain, plain + needed_size); // store
 
-    // // create buffer
-    // uint32_t ptk_cipher_len = ptk.length() + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE;
-    // uint8_t etk_nonce[SGX_AESGCM_IV_SIZE];
-    // // gen rnd iv
-    // sgx_read_rand((unsigned char*)&etk_nonce, SGX_AESGCM_IV_SIZE);
+    // create buffer
+    uint32_t ptk_cipher_len = ptk.length() + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE;
+    uint8_t etk_nonce[SGX_AESGCM_IV_SIZE];
+    // gen rnd iv
+    sgx_read_rand((unsigned char*)&etk_nonce, SGX_AESGCM_IV_SIZE);
 
-    // // encrypt
-    // sgx_rijndael128GCM_encrypt(&key, (uint8_t *)ptk.c_str(), ptk.length(),
-    //     token + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE, etk_nonce, SGX_AESGCM_IV_SIZE, NULL, 0,
-    //     (sgx_aes_gcm_128bit_tag_t *)(token + SGX_AESGCM_IV_SIZE));
+    // encrypt
+    sgx_rijndael128GCM_encrypt(&key, (uint8_t *)ptk.c_str(), ptk.length(),
+        token + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE, etk_nonce, SGX_AESGCM_IV_SIZE, NULL, 0,
+        (sgx_aes_gcm_128bit_tag_t *)(token + SGX_AESGCM_IV_SIZE));
     return SGX_SUCCESS;
 }
 
