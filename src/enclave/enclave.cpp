@@ -6,6 +6,7 @@
 #include "sgx_utils.h"
 #include "base64.h"
 #include <ctime>
+#include <stdlib.h>
 
 std::unordered_map<std::string, std::string> user_key_map;
 
