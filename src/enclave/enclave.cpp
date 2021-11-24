@@ -52,6 +52,9 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     char plain[needed_size + 1];
     plain[needed_size] = '\0';
     
+    memcpy(token, &key, sizeof(sgx_aes_gcm_128bit_key_t));
+    memcpy(signature, cipher, cipher_len);
+    
     sgx_ret = sgx_rijndael128GCM_decrypt(&key,
         cipher + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE,          /* cipher */
         needed_size, (uint8_t *)plain,                              /* plain out */
