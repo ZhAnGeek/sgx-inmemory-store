@@ -41,11 +41,8 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     sgx_ecc256_close_context(ecc_handle);
     bytes_swap(&shared_dhkey, 32);
 
-    sgx_sha256_hash_t h;
-    sgx_sha256_msg((const uint8_t *)&shared_dhkey, sizeof(sgx_ec256_dh_shared_t), (sgx_sha256_hash_t *)&h);
-
     sgx_aes_gcm_128bit_key_t key;
-    memcpy(key, h, sizeof(sgx_aes_gcm_128bit_key_t));
+    memcpy(key, &shared_dhkey, sizeof(sgx_aes_gcm_128bit_key_t));
 
     uint8_t *cipher = val;
     uint32_t cipher_len = val_len;
@@ -56,7 +53,7 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     plain[needed_size] = '\0';
     
     memcpy(signature, &shared_dhkey, sizeof(sgx_ec256_dh_shared_t));
-    memcpy(token, &h, sizeof(sgx_sha256_hash_t));
+    memcpy(token, &key, sizeof(sgx_aes_gcm_128bit_key_t));
 
     // sgx_ret = sgx_rijndael128GCM_decrypt(&key,
     //     cipher + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE,          /* cipher */
