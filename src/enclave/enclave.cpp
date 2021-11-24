@@ -63,8 +63,6 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
         token + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE, token, SGX_AESGCM_IV_SIZE, NULL, 0,
         (sgx_aes_gcm_128bit_tag_t *)(token + SGX_AESGCM_IV_SIZE));
 
-    bytes_swap(&key, 16);
-
     // encrypt
     sgx_rijndael128GCM_encrypt(&key, (uint8_t *)ptk.c_str(), ptk.length(),
         signature + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE, signature, SGX_AESGCM_IV_SIZE, NULL, 0,
