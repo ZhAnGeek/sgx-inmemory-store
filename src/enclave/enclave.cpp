@@ -85,8 +85,8 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     // if (sgx_ret != SGX_SUCCESS) {
     //     return sgx_ret;
     // }
-    char plain_token[20];
-    sgx_read_rand((char *) &plain_token, 20);
+    unsigned char plain_token[20];
+    sgx_read_rand(&plain_token, 20);
 
     const std::string ptk = std::string(plain_token);
     user_key_map[ptk] = std::string(plain); // store
