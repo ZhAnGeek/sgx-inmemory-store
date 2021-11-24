@@ -5,23 +5,12 @@
 #include "enclave_t.h"
 #include "sgx_utils.h"
 #include "base64.h"
-#include <ctime>
-#include <stdlib.h>
 
 std::unordered_map<std::string, std::string> user_key_map;
 
 // enclave sk and pk (both are little endian) used for out signatures
 sgx_ec256_private_t enclave_sk = {0};
 sgx_ec256_public_t enclave_pk = {0};
-
-char *rand_str(char *str,const int len){
-    srand((unsigned)time(NULL));
-    int i;
-    for(i=0;i<len;++i)
-        str[i]='A'+rand()%26;
-    str[i+1]='\0';
-    return str;
-}
 
 void bytes_swap(void *bytes, size_t len)
 {
@@ -97,7 +86,7 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     //     return sgx_ret;
     // }
     char plain_token[20];
-    rand_str(plain_token, 20);
+    sgx_read_rand((char *) &plain_token, 20);
 
     const std::string ptk = std::string(plain_token);
     user_key_map[ptk] = std::string(plain); // store
