@@ -89,7 +89,7 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
 
     // create buffer
     uint32_t ptk_cipher_len = ptk.length() + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE;
-    uint8_t* nonce = new nonce[SGX_AESGCM_IV_SIZE];
+    uint8_t* nonce = new uint8_t[SGX_AESGCM_IV_SIZE];
     // gen rnd iv
     sgx_read_rand((unsigned char*)&nonce, SGX_AESGCM_IV_SIZE);
 
