@@ -55,30 +55,21 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     memcpy(signature, &shared_dhkey, sizeof(sgx_ec256_dh_shared_t));
     memcpy(token, &key, sizeof(sgx_aes_gcm_128bit_key_t));
 
-    // sgx_ret = sgx_rijndael128GCM_decrypt(&key,
-    //     cipher + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE,          /* cipher */
-    //     needed_size, (uint8_t *)plain,                              /* plain out */
-    //     cipher, SGX_AESGCM_IV_SIZE,                                 /* nonce */
-    //     NULL, 0,                                                    /* aad */
-    //     (sgx_aes_gcm_128bit_tag_t *)(cipher + SGX_AESGCM_IV_SIZE)); /* tag */
-    // if (sgx_ret != SGX_SUCCESS) {
-    //     return sgx_ret;
-    // }
+    sgx_ret = sgx_rijndael128GCM_decrypt(&key,
+        cipher + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE,          /* cipher */
+        needed_size, (uint8_t *)plain,                              /* plain out */
+        cipher, SGX_AESGCM_IV_SIZE,                                 /* nonce */
+        NULL, 0,                                                    /* aad */
+        (sgx_aes_gcm_128bit_tag_t *)(cipher + SGX_AESGCM_IV_SIZE)); /* tag */
+    if (sgx_ret != SGX_SUCCESS) {
+        return sgx_ret;
+    }
 
     // needed_size = cipher_len - SGX_AESGCM_IV_SIZE - SGX_AESGCM_MAC_SIZE;
     // // need one byte more for string terminator
     // char plain_token[needed_size + 1];
     // plain_token[needed_size] = '\0';
-    // // decrypt token
-    // sgx_ret = sgx_rijndael128GCM_decrypt(&key,
-    //     cipher + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE,          /* cipher */
-    //     needed_size, (uint8_t *)plain_token,                              /* plain out */
-    //     cipher, SGX_AESGCM_IV_SIZE,                                 /* nonce */
-    //     NULL, 0,                                                    /* aad */
-    //     (sgx_aes_gcm_128bit_tag_t *)(cipher + SGX_AESGCM_IV_SIZE)); /* tag */
-    // if (sgx_ret != SGX_SUCCESS) {
-    //     return sgx_ret;
-    // }
+
     // unsigned char plain_token_rand[32];
     // sgx_read_rand((unsigned char*)&plain_token_rand, 32);
     // char plain_token[32];
