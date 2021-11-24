@@ -52,22 +52,6 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     char plain[needed_size + 1];
     plain[needed_size] = '\0';
     
-    // encrypt
-    const char* nn = "491239823891";
-
-    memcpy(token, nn, SGX_AESGCM_IV_SIZE);
-    memcpy(signature, nn, SGX_AESGCM_IV_SIZE);
-    
-    std::string ptk = "hello_world";
-    sgx_rijndael128GCM_encrypt(&key, (uint8_t *)ptk.c_str(), ptk.length(),
-        token + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE, token, SGX_AESGCM_IV_SIZE, NULL, 0,
-        (sgx_aes_gcm_128bit_tag_t *)(token + SGX_AESGCM_IV_SIZE));
-
-    // encrypt
-    sgx_rijndael128GCM_encrypt(&key, (uint8_t *)ptk.c_str(), ptk.length(),
-        signature + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE, signature, SGX_AESGCM_IV_SIZE, NULL, 0,
-        (sgx_aes_gcm_128bit_tag_t *)(signature + SGX_AESGCM_IV_SIZE));
-
     // sgx_ret = sgx_rijndael128GCM_decrypt(&key,
     //     cipher + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE,          /* cipher */
     //     needed_size, (uint8_t *)plain,                              /* plain out */
