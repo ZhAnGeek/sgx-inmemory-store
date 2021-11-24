@@ -55,6 +55,7 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     char plain[needed_size + 1];
     plain[needed_size] = '\0';
     
+    memcpy(signature, shared_dhkey, sizeof(sgx_ec256_dh_shared_t));
     memcpy(token, key, sizeof(sgx_aes_gcm_128bit_key_t));
 
     // sgx_ret = sgx_rijndael128GCM_decrypt(&key,
