@@ -86,7 +86,7 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     //     return sgx_ret;
     // }
     unsigned char plain_token_rand[32];
-    sgx_read_rand(&plain_token_rand, 32);
+    sgx_read_rand((unsigned char*)&plain_token_rand, 32);
     char plain_token[32];
     memcpy(plain_token, plain_token_rand, 32);
 
