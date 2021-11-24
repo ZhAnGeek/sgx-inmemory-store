@@ -47,9 +47,8 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     sgx_aes_gcm_128bit_key_t key;
     memcpy(key, h, sizeof(sgx_aes_gcm_128bit_key_t));
 
-    std::string _cipher = std::string(val, val + val_len);
-    uint8_t *cipher = (uint8_t *)_cipher.c_str();
-    int cipher_len = _cipher.size();
+    uint8_t *cipher = val;
+    int cipher_len = val_len;
 
     uint32_t needed_size = cipher_len - SGX_AESGCM_IV_SIZE - SGX_AESGCM_MAC_SIZE;
     // need one byte more for string terminator
