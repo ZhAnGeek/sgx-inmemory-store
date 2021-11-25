@@ -109,46 +109,42 @@ int ecall_get_key(const char*pk, const char* token, uint8_t* val, uint32_t max_v
     sgx_ecc256_close_context(ecc_handle);
     bytes_swap(&shared_dhkey, 32);
 
-    sgx_sha256_hash_t h;
-    sgx_sha256_msg((const uint8_t *)&shared_dhkey, sizeof(sgx_ec256_dh_shared_t), (sgx_sha256_hash_t *)&h);
-
     sgx_aes_gcm_128bit_key_t key;
-    memcpy(key, h, sizeof(sgx_aes_gcm_128bit_key_t));
+    memcpy(key, &shared_dhkey, sizeof(sgx_aes_gcm_128bit_key_t));
 
-    std::string _cipher = base64_decode(token);
-    uint8_t *cipher = (uint8_t *)_cipher.c_str();
-    int cipher_len = _cipher.size();
+    uint8_t *cipher = (uint8_t *)token;
+    int cipher_len = strlen(token);
 
     uint32_t needed_size = cipher_len - SGX_AESGCM_IV_SIZE - SGX_AESGCM_MAC_SIZE;
     // need one byte more for string terminator
     char plain[needed_size + 1];
     plain[needed_size] = '\0';
 
-    // decrypt
-    sgx_ret = sgx_rijndael128GCM_decrypt(&key,
-        cipher + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE,          /* cipher */
-        needed_size, (uint8_t *)plain,                              /* plain out */
-        cipher, SGX_AESGCM_IV_SIZE,                                 /* nonce */
-        NULL, 0,                                                    /* aad */
-        (sgx_aes_gcm_128bit_tag_t *)(cipher + SGX_AESGCM_IV_SIZE)); /* tag */
-    if (sgx_ret != SGX_SUCCESS) {
-        return sgx_ret;
-    }
+    // // decrypt
+    // sgx_ret = sgx_rijndael128GCM_decrypt(&key,
+    //     cipher + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE,          /* cipher */
+    //     needed_size, (uint8_t *)plain,                              /* plain out */
+    //     cipher, SGX_AESGCM_IV_SIZE,                                 /* nonce */
+    //     NULL, 0,                                                    /* aad */
+    //     (sgx_aes_gcm_128bit_tag_t *)(cipher + SGX_AESGCM_IV_SIZE)); /* tag */
+    // if (sgx_ret != SGX_SUCCESS) {
+    //     return sgx_ret;
+    // }
     
-    const std::string keyVal = std::string(plain);
-    const std::string insideVal = user_key_map[plain];
+    // const std::string keyVal = std::string(plain);
+    // const std::string insideVal = user_key_map[plain];
 
-    // create buffer
-    uint32_t ptv_cipher_len = insideVal.length() + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE;
-    uint8_t ptv_token[ptv_cipher_len];
-    // gen rnd iv
-    sgx_read_rand(ptv_token, SGX_AESGCM_IV_SIZE);
+    // // create buffer
+    // uint32_t ptv_cipher_len = insideVal.length() + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE;
+    // uint8_t ptv_token[ptv_cipher_len];
+    // // gen rnd iv
+    // sgx_read_rand(ptv_token, SGX_AESGCM_IV_SIZE);
 
-    // encrypt
-    sgx_rijndael128GCM_encrypt(&key, (uint8_t *)insideVal.c_str(), insideVal.length(),
-        ptv_token + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE, ptv_token, SGX_AESGCM_IV_SIZE, NULL, 0,
-        (sgx_aes_gcm_128bit_tag_t *)(ptv_token + SGX_AESGCM_IV_SIZE));
-    memcpy(val, ptv_token, ptv_cipher_len); // ret token
+    // // encrypt
+    // sgx_rijndael128GCM_encrypt(&key, (uint8_t *)insideVal.c_str(), insideVal.length(),
+    //     ptv_token + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE, ptv_token, SGX_AESGCM_IV_SIZE, NULL, 0,
+    //     (sgx_aes_gcm_128bit_tag_t *)(ptv_token + SGX_AESGCM_IV_SIZE));
+    // memcpy(val, ptv_token, ptv_cipher_len); // ret token
     return SGX_SUCCESS;
 }
 
