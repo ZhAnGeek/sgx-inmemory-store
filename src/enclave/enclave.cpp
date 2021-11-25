@@ -90,7 +90,7 @@ int ecall_set_key(const char* pk, const char* nonce, uint8_t* val, uint32_t val_
     return SGX_SUCCESS;
 }
 
-int ecall_get_key(const char*pk, const char* token, uint8_t* val, uint32_t max_val_len, uint8_t* signature, uint32_t max_sig_len, uint32_t* val_len, uint32_t* sig_len) {
+int ecall_get_key(const char* pk, const char* token, uint8_t* val, uint32_t max_val_len, uint8_t* signature, uint32_t max_sig_len, uint32_t* val_len, uint32_t* sig_len) {
     sgx_ec256_public_t client_pk = {0};
 
     uint8_t *pk_bytes = (uint8_t *)pk;
@@ -113,8 +113,9 @@ int ecall_get_key(const char*pk, const char* token, uint8_t* val, uint32_t max_v
     memcpy(key, &shared_dhkey, sizeof(sgx_aes_gcm_128bit_key_t));
     memcpy(val, key, sizeof(sgx_aes_gcm_128bit_key_t));
 
-    uint8_t *cipher = (uint8_t *)token;
     int cipher_len = strlen(token);
+    uint8_t cipher[cipher_len];
+    memcpy(cipher, token, cipher_len);
 
     uint32_t needed_size = cipher_len - SGX_AESGCM_IV_SIZE - SGX_AESGCM_MAC_SIZE;
     // need one byte more for string terminator
@@ -122,15 +123,15 @@ int ecall_get_key(const char*pk, const char* token, uint8_t* val, uint32_t max_v
     plain[needed_size] = '\0';
 
     // decrypt
-    // sgx_ret = sgx_rijndael128GCM_decrypt(&key,
-    //     cipher + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE,          /* cipher */
-    //     needed_size, (uint8_t *)plain,                              /* plain out */
-    //     cipher, SGX_AESGCM_IV_SIZE,                                 /* nonce */
-    //     NULL, 0,                                                    /* aad */
-    //     (sgx_aes_gcm_128bit_tag_t *)(cipher + SGX_AESGCM_IV_SIZE)); /* tag */
-    // if (sgx_ret != SGX_SUCCESS) {
-    //     return sgx_ret;
-    // }
+    sgx_ret = sgx_rijndael128GCM_decrypt(&key,
+        cipher + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE,          /* cipher */
+        needed_size, (uint8_t *)plain,                              /* plain out */
+        cipher, SGX_AESGCM_IV_SIZE,                                 /* nonce */
+        NULL, 0,                                                    /* aad */
+        (sgx_aes_gcm_128bit_tag_t *)(cipher + SGX_AESGCM_IV_SIZE)); /* tag */
+    if (sgx_ret != SGX_SUCCESS) {
+        return sgx_ret;
+    }
     
     // const std::string keyVal = std::string(plain);
     // const std::string insideVal = user_key_map[plain];
