@@ -120,16 +120,16 @@ int ecall_get_key(const char*pk, const char* token, uint8_t* val, uint32_t max_v
     char plain[needed_size + 1];
     plain[needed_size] = '\0';
 
-    // // decrypt
-    // sgx_ret = sgx_rijndael128GCM_decrypt(&key,
-    //     cipher + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE,          /* cipher */
-    //     needed_size, (uint8_t *)plain,                              /* plain out */
-    //     cipher, SGX_AESGCM_IV_SIZE,                                 /* nonce */
-    //     NULL, 0,                                                    /* aad */
-    //     (sgx_aes_gcm_128bit_tag_t *)(cipher + SGX_AESGCM_IV_SIZE)); /* tag */
-    // if (sgx_ret != SGX_SUCCESS) {
-    //     return sgx_ret;
-    // }
+    // decrypt
+    sgx_ret = sgx_rijndael128GCM_decrypt(&key,
+        cipher + SGX_AESGCM_IV_SIZE + SGX_AESGCM_MAC_SIZE,          /* cipher */
+        needed_size, (uint8_t *)plain,                              /* plain out */
+        cipher, SGX_AESGCM_IV_SIZE,                                 /* nonce */
+        NULL, 0,                                                    /* aad */
+        (sgx_aes_gcm_128bit_tag_t *)(cipher + SGX_AESGCM_IV_SIZE)); /* tag */
+    if (sgx_ret != SGX_SUCCESS) {
+        return sgx_ret;
+    }
     
     // const std::string keyVal = std::string(plain);
     // const std::string insideVal = user_key_map[plain];
